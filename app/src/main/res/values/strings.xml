@@ -6,4 +6,10 @@
     <string name="app_info_privacy">プライバシーポリシー</string>
     <string name="app_info_oss">オープンソースライセンス</string>
     <string name="app_info_version">アプリバージョン</string>
+
+    <!-- Main -->
+    <string name="main_btn_record">録音</string>
+    <string name="main_btn_continue">継続</string>
+    <string name="main_btn_save">保存</string>
+    <string name="main_btn_delete">削除</string>
 </resources>
