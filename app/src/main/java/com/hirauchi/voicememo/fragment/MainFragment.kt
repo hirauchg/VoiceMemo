@@ -8,7 +8,12 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.hirauchi.voicememo.R
+import com.hirauchi.voicememo.model.Memo
 import com.hirauchi.voicememo.ui.MainFragmentUI
+import io.realm.Realm
+import io.realm.kotlin.createObject
+import io.realm.kotlin.where
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.*
@@ -18,12 +23,16 @@ class MainFragment : Fragment() {
     private val mUI = MainFragmentUI()
     private val REQUEST_CODE = 100
 
+    private lateinit var realm: Realm
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return mUI.createView(AnkoContext.create(inflater.context, this, false))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        realm = Realm.getDefaultInstance()
 
         mUI.apply {
             mRecordButton.onClick {
@@ -50,10 +59,20 @@ class MainFragment : Fragment() {
     }
 
     private fun saveRecord() {
+        try {
+            realm.executeTransaction {
+                val maxId = realm.where<Memo>().max("id")
+                val targetId = (maxId?.toLong() ?: 0) + 1
+                val memo = realm.createObject<Memo>(targetId)
+                memo.content = mUI.mText.text.toString()
+                memo.dateTime = System.currentTimeMillis()
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+
         mUI.mText.text.clear()
         changeView(false)
-
-        // TODO
     }
 
     private fun deleteRecord() {
@@ -80,14 +99,18 @@ class MainFragment : Fragment() {
     }
 
     private fun changeView(isVisible: Boolean) {
-        if (isVisible) {
-            mUI.mText.visibility = View.VISIBLE
-            mUI.mSaveWrapper.visibility = View.VISIBLE
-            mUI.mDeleteWrapper.visibility = View.VISIBLE
-        } else {
-            mUI.mText.visibility = View.GONE
-            mUI.mSaveWrapper.visibility = View.GONE
-            mUI.mDeleteWrapper.visibility = View.GONE
+        mUI.apply {
+            if (isVisible) {
+                mText.visibility = View.VISIBLE
+                mSaveWrapper.visibility = View.VISIBLE
+                mDeleteWrapper.visibility = View.VISIBLE
+                mRecordText.text = getString(R.string.main_btn_continue)
+            } else {
+                mText.visibility = View.GONE
+                mSaveWrapper.visibility = View.GONE
+                mDeleteWrapper.visibility = View.GONE
+                mRecordText.text = getString(R.string.main_btn_record)
+            }
         }
     }
 }

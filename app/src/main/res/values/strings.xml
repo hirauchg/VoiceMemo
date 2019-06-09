@@ -9,7 +9,13 @@
 
     <!-- Main -->
     <string name="main_btn_record">録音</string>
-    <string name="main_btn_continue">継続</string>
+    <string name="main_btn_continue">継続録音</string>
     <string name="main_btn_save">保存</string>
     <string name="main_btn_delete">削除</string>
+
+    <!-- MemoList -->
+    <string name="memo_list_title">メモ一覧</string>
+    <string name="memo_list_date_format">yyyy/MM/dd HH:mm:ss</string>
+    <string name="memo_list_menu_select_all">全選択</string>
+    <string name="memo_list_menu_select_clear">クリア</string>
 </resources>

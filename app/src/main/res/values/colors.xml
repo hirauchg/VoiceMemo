@@ -9,4 +9,8 @@
 
     <color name="radiusBtnBG">#FF4081</color>
     <color name="radiusBtnBGpressed">#CCFF4081</color>
+
+    <color name="memoListTime">#888888</color>
+    <color name="memoListDivider">#CCCCCC</color>
+
 </resources>

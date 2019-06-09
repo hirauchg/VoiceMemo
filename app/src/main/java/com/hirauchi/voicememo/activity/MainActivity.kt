@@ -23,6 +23,7 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.menu_memo_list -> startActivity<MemoListActivity>()
             R.id.menu_app_info -> startActivity<AppInfoActivity>()
         }
         return super.onOptionsItemSelected(item)

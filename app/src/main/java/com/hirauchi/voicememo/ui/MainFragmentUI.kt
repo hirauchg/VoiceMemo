@@ -1,6 +1,5 @@
 package com.hirauchi.voicememo.ui
 
-import android.annotation.SuppressLint
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.*
@@ -12,6 +11,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
 
     lateinit var mText: EditText
     lateinit var mRecordButton: ImageButton
+    lateinit var mRecordText: TextView
     lateinit var mSaveWrapper: RelativeLayout
     lateinit var mSaveButton: ImageButton
     lateinit var mDeleteWrapper: RelativeLayout
@@ -59,7 +59,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         centerHorizontally()
                     }
 
-                    textView(R.string.main_btn_record) {
+                    mRecordText = textView(R.string.main_btn_record) {
                         textSize = 16F
                     }.lparams {
                         centerHorizontally()
