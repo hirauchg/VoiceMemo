@@ -6,4 +6,7 @@
 
     <color name="colorBG">#F8F8F8</color>
     <color name="textColor">#000000</color>
+
+    <color name="radiusBtnBG">#FF4081</color>
+    <color name="radiusBtnBGpressed">#CCFF4081</color>
 </resources>

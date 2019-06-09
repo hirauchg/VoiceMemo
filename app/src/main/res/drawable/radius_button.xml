@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/colorAccent" />
-    <corners android:radius="72dip" />
-</shape>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item android:state_pressed="false">
+    <shape>
+        <solid android:color="@color/radiusBtnBG" />
+        <corners android:radius="72dip" />
+    </shape>
+</item>
+
+<item android:state_pressed="true">
+    <shape>
+        <solid android:color="@color/radiusBtnBGpressed" />
+        <corners android:radius="72dip" />
+    </shape>
+</item>
+
+</selector>
