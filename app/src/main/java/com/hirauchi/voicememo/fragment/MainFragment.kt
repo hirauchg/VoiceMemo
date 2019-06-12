@@ -16,6 +16,9 @@ import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.yesButton
 import java.util.*
 
 class MainFragment : Fragment() {
@@ -23,7 +26,7 @@ class MainFragment : Fragment() {
     private val mUI = MainFragmentUI()
     private val REQUEST_CODE = 100
 
-    private lateinit var realm: Realm
+    private lateinit var mRealm: Realm
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return mUI.createView(AnkoContext.create(inflater.context, this, false))
@@ -32,7 +35,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        realm = Realm.getDefaultInstance()
+        mRealm = Realm.getDefaultInstance()
 
         mUI.apply {
             mRecordButton.onClick {
@@ -40,13 +43,26 @@ class MainFragment : Fragment() {
             }
 
             mSaveButton.onClick {
-                saveRecord()
+                if (!mUI.mText.text.trim().isEmpty()) {
+                    saveRecord()
+                } else {
+                    deleteRecord()
+                }
             }
 
             mDeleteButton.onClick {
-                deleteRecord()
+                alert(R.string.main_delete_message) {
+                    yesButton {
+                        deleteRecord()
+                    }
+                }.show()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mRealm.close()
     }
 
     private fun startRecord() {
@@ -60,15 +76,17 @@ class MainFragment : Fragment() {
 
     private fun saveRecord() {
         try {
-            realm.executeTransaction {
-                val maxId = realm.where<Memo>().max("id")
+            mRealm.executeTransaction {
+                val maxId = mRealm.where<Memo>().max("id")
                 val targetId = (maxId?.toLong() ?: 0) + 1
-                val memo = realm.createObject<Memo>(targetId)
+                val memo = mRealm.createObject<Memo>(targetId)
                 memo.content = mUI.mText.text.toString()
                 memo.dateTime = System.currentTimeMillis()
+                toast(R.string.main_save_success)
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
+            toast(R.string.main_save_error)
         }
 
         mUI.mText.text.clear()

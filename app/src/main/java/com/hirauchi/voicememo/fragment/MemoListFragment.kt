@@ -5,20 +5,26 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.hirauchi.voicememo.R
 import com.hirauchi.voicememo.adapter.MemoListAdapter
 import com.hirauchi.voicememo.model.Memo
 import com.hirauchi.voicememo.ui.MemoListFragmentUI
+import io.realm.OrderedRealmCollection
 import io.realm.Realm
 import io.realm.Sort
 import io.realm.kotlin.where
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.yesButton
 
 class MemoListFragment : Fragment(), MemoListAdapter.SampleAdapterListener {
 
     private val mUI = MemoListFragmentUI()
     private var mMemoListMap = hashMapOf<Memo, Boolean>()
 
+    private lateinit var mMemoList: OrderedRealmCollection<Memo>
     private lateinit var mRealm: Realm
     private lateinit var mAdapter: MemoListAdapter
 
@@ -31,20 +37,34 @@ class MemoListFragment : Fragment(), MemoListAdapter.SampleAdapterListener {
 
         mRealm = Realm.getDefaultInstance()
 
-        mAdapter = MemoListAdapter(context!!, this)
+        mMemoList = getMemoList()
+        mAdapter = MemoListAdapter(context, this, mMemoList, true)
         mUI.mRecyclerView.adapter = mAdapter
 
-        mAdapter.setMemoList(getMemoList())
+        mUI.mDeleteButton.onClick {
+            alert {
+                title = getString(R.string.memo_list_delete_title)
+                message = getString(R.string.memo_list_delete_message)
 
-        mUI.mDelete.onClick {
-            deleteMemo()
+                yesButton {
+                    deleteMemo()
+                }
+            }.show()
         }
     }
 
-    private fun getMemoList(): List<Memo> {
-        var memoList = listOf<Memo>()
+    override fun onDestroy() {
+        super.onDestroy()
+        mRealm.close()
+    }
+
+    private fun getMemoList(): OrderedRealmCollection<Memo> {
+        lateinit var memoList: OrderedRealmCollection<Memo>
+
         try {
-            memoList = mRealm.where<Memo>().findAll().sort("dateTime", Sort.DESCENDING)
+            mRealm.executeTransaction {
+                memoList = mRealm.where<Memo>().findAll().sort("dateTime", Sort.DESCENDING)
+            }
 
             mMemoListMap.clear()
             for (memo in memoList) {
@@ -61,14 +81,18 @@ class MemoListFragment : Fragment(), MemoListAdapter.SampleAdapterListener {
         try {
             mRealm.executeTransaction {
                 for ((memo, isChecked) in mMemoListMap) {
-                    if (isChecked) memo.deleteFromRealm()
+                    val _memo = mRealm.where<Memo>().equalTo("id",memo.id).findFirst()
+                    if (isChecked) _memo?.deleteFromRealm()
                 }
             }
+            toast(R.string.memo_list_delete_success)
         } catch (ex: Exception) {
             ex.printStackTrace()
+            toast(R.string.memo_list_delete_error)
         }
 
-        mAdapter.setMemoList(getMemoList())
+        mMemoList = getMemoList()
+        mUI.mDeleteButton.visibility = View.GONE
     }
 
     fun selectAll(isSelectAll: Boolean) {
@@ -76,9 +100,20 @@ class MemoListFragment : Fragment(), MemoListAdapter.SampleAdapterListener {
         for ((memo, isChecked) in mMemoListMap) {
             mMemoListMap.put(memo, isSelectAll)
         }
+
+        if (isSelectAll) {
+            mUI.mDeleteButton.visibility = View.VISIBLE
+        } else {
+            mUI.mDeleteButton.visibility = View.GONE
+        }
     }
 
     override fun onClickCheckBox(memo: Memo, isChecked: Boolean) {
         mMemoListMap.set(memo, isChecked)
+
+        mUI.mDeleteButton.visibility = View.GONE
+        for ((_, _isChecked) in mMemoListMap) {
+            if (_isChecked) mUI.mDeleteButton.visibility = View.VISIBLE
+        }
     }
 }

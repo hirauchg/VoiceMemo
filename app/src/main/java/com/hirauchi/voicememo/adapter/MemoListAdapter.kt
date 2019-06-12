@@ -7,44 +7,37 @@ import android.view.ViewGroup
 import com.hirauchi.voicememo.R
 import com.hirauchi.voicememo.model.Memo
 import com.hirauchi.voicememo.ui.MemoListAdapterUI
+import io.realm.OrderedRealmCollection
+import io.realm.RealmRecyclerViewAdapter
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.sdk27.coroutines.onCheckedChange
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MemoListAdapter(val mContext: Context, val mListener: SampleAdapterListener): RecyclerView.Adapter<MemoListAdapter.ViewHolder>() {
+class MemoListAdapter(val mContext: Context?, val mListener: SampleAdapterListener, val mMemoList: OrderedRealmCollection<Memo>?, val mAutoUpdate: Boolean)
+    : RealmRecyclerViewAdapter<Memo, MemoListAdapter.ViewHolder>(mMemoList, mAutoUpdate) {
 
     interface SampleAdapterListener {
         fun onClickCheckBox(memo: Memo, isChecked: Boolean)
     }
 
     private val mUI = MemoListAdapterUI()
-    private var mMemoList = listOf<Memo>()
     private var mIsSelectAll = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(mUI.createView(AnkoContext.create(parent.context, parent)))
     }
 
-    override fun getItemCount(): Int {
-        return mMemoList.size
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val memo = mMemoList.get(position)
+        mMemoList?.get(position)?.let {
+            holder.dateTime.text = SimpleDateFormat(mContext?.getString(R.string.memo_list_date_format), Locale.US).format(it.dateTime)
+            holder.content.text = it.content
 
-        holder.dateTime.text = SimpleDateFormat(mContext.getString(R.string.memo_list_date_format), Locale.US).format(memo.dateTime)
-        holder.content.text = memo.content
-
-        holder.checkBox.isChecked = mIsSelectAll
-        holder.checkBox.onCheckedChange { _, isChecked ->
-            mListener.onClickCheckBox(memo, isChecked)
+            holder.checkBox.isChecked = mIsSelectAll
+            holder.checkBox.onCheckedChange { _, isChecked ->
+                mListener.onClickCheckBox(it, isChecked)
+            }
         }
-    }
-
-    fun setMemoList(memoList: List<Memo>) {
-        mMemoList = memoList
-        notifyDataSetChanged()
     }
 
     fun selectAll(isSelectAll: Boolean) {

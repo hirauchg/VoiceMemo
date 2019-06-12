@@ -22,7 +22,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
             mText = editText {
                 visibility = View.GONE
                 maxLines = 15
-            }.lparams(width = matchParent, height = wrapContent) {
+            }.lparams(matchParent, wrapContent) {
                 topMargin = dip(16)
                 horizontalMargin = dip(16)
                 alignParentTop()
@@ -37,7 +37,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         scaleType = ImageView.ScaleType.FIT_CENTER
                         background = ContextCompat.getDrawable(ctx, R.drawable.radius_button)
                         elevation = dip(4).toFloat()
-                    }.lparams(width = dip(72), height = dip(72)) {
+                    }.lparams(dip(72), dip(72)) {
                         centerHorizontally()
                     }
 
@@ -47,7 +47,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         centerHorizontally()
                         alignParentBottom()
                     }
-                }.lparams(width = 0, height = matchParent, weight = 2F)
+                }.lparams(0, matchParent, 2F)
 
                 relativeLayout {
                     mRecordButton = imageButton(R.drawable.ic_mic) {
@@ -55,7 +55,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         scaleType = ImageView.ScaleType.FIT_CENTER
                         background = ContextCompat.getDrawable(ctx, R.drawable.radius_button)
                         elevation = dip(4).toFloat()
-                    }.lparams(width = dip(72), height = dip(72)) {
+                    }.lparams(dip(72), dip(72)) {
                         centerHorizontally()
                     }
 
@@ -65,7 +65,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         centerHorizontally()
                         alignParentBottom()
                     }
-                }.lparams(width = 0, height = matchParent, weight = 1F)
+                }.lparams(0, matchParent, 1F)
 
                 mDeleteWrapper = relativeLayout {
                     visibility = View.GONE
@@ -75,7 +75,7 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         scaleType = ImageView.ScaleType.FIT_CENTER
                         background = ContextCompat.getDrawable(ctx, R.drawable.radius_button)
                         elevation = dip(4).toFloat()
-                    }.lparams(width = dip(72), height = dip(72)) {
+                    }.lparams(dip(72), dip(72)) {
                         centerHorizontally()
                     }
 
@@ -85,8 +85,8 @@ class MainFragmentUI : AnkoComponent<MainFragment> {
                         centerHorizontally()
                         alignParentBottom()
                     }
-                }.lparams(width = 0, height = matchParent, weight = 2F)
-            }.lparams(width = matchParent, height = dip(100)) {
+                }.lparams(0, matchParent, 2F)
+            }.lparams(matchParent, dip(100)) {
                 alignParentBottom()
                 bottomMargin = dip(100)
             }
